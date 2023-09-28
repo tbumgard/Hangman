@@ -1,4 +1,5 @@
 import random
+import os
 
 #Player class - contains a player's information such as name(str), player_id(int), score(int) along with getter functions for them
 #constructor Player(name(str), player_id(int))
@@ -25,6 +26,9 @@ class Player():
 def main():
     #seeding the rng to choose player at random later
     random.seed(10)
+    
+    #clear the screen
+    os.system('clear')
 
     print("---===  WELCOME TO HANGMAN  ===---".center(50))   
     print("\n \n \n")
@@ -68,55 +72,134 @@ def main():
         
     print('\n')
     
-    #Iterate over the players entered into the game along with their ids, name and score pulled from the Class player
-    i = 1
-    while i in range(1, num_players + 1):
-        print(f"Player {players[i % num_players].get_player_id()}'s Name: {players[i % num_players].get_name()} \t Score: {players[i % num_players].get_score()}")
-
-    #choose a random player to be the current_player (the player to submit a word_to_guess) - and print it to notify players
-    current_player = random.randint(0,num_players - 1)
-    print(f"\nPlayer {current_player % num_players}, {players[current_player % num_players].get_name()} will enter the first word")
+    #keep playing the game, initialized to Yes (True)
+    play_again = True
     
-    #input the word_to_guess - valid input string with size greater than 1 with out any non-alpha chars that has been lowered()
-    valid = False
-    while not valid:
-        try:
-            word_to_guess = input("Please enter the word to guess: ")
-            word_to_guess = word_to_guess.lower()
-            if not word_to_guess.isalpha():
-                raise ValueError
-        except ValueError:
-                print("Please enter a word at least 1 letter long with out any non-alpha characters")
+    #Initialize current_player to None so the player to submit a word first is random
+    current_player = None
+
+    #START THE GAME AND PLAY UNTIL play_again = False
+    while play_again:
+        
+        os.system('clear')
+
+        #choose a random player to be the current_player (the player to submit a word_to_guess) unless one currently exist then increment by 1
+        if current_player is None:
+            current_player = random.randint(0,num_players - 1)    
         else:
-            valid = True
-    
-    #create a string for the revealed_letters that is the length of the word_to_guess that has an initial value of '_' * length of word_to_guess
-    revealed_letters = ""
-    for i in range(len(word_to_guess)):
-        revealed_letters += '_'
+            current_player += 1
 
-    print(f"Revealed Letters: {revealed_letters}")
-    print(f"Word to guess: {word_to_guess}")
-    
-    #variable of the state of the game
-    solved = False
-    
-    #set the first guessing player to the next player after the current_player(player that submitted the word_to_guess) 
-    #no need to wrap around since we will be using % to calculate who is currently guessing
-    guessing_player = current_player + 1
-    
-    #variable of the guessed_letters, initialized to empty
-    guessed_letters = ""
-    
-    #while the word is not solved yet and there are still guesses left continue to get guesses from players
-    while not solved and guesses:
-        print(f"Current_player: {current_player}")
-        print(f"Current Guessing Player: {guessing_player % num_players}")
-        if not (guessing_player % num_players == current_player):
-            guess_letter = input(f"Player {players[guessing_player % num_players].get_name()} please guess a letter:")
-            if guess_letter == "c":
-                solved = True
+        print(f"\nPlayer {players[current_player % num_players].get_player_id()}, {players[current_player % num_players].get_name()} will enter the word to guess")
 
-        guessing_player += 1
+        #input the word_to_guess - valid input string with size greater than 1 with out any non-alpha chars that has been lowered()
+        valid = False
+        while not valid:
+            try:
+                word_to_guess = input("Please enter the word to guess: ")
+                word_to_guess = word_to_guess.lower()
+                if not word_to_guess.isalpha():
+                    raise ValueError
+            except ValueError:
+                    print("Please enter a word at least 1 letter long with out any non-alpha characters")
+            else:
+                valid = True
+        
+        #clear the screen after word_to_guess is put in so other players wont see 
+        os.system('clear')
+
+        #create a string for the revealed_letters that is the length of the word_to_guess that has an initial value of '_' * length of word_to_guess
+        revealed_letters = ""
+        for i in range(len(word_to_guess)):
+            revealed_letters += '_'
+
+        #variable of the state of the game
+        solved = False
+        
+        #set the first guessing player to the next player after the current_player(player that submitted the word_to_guess) 
+        #no need to wrap around since we will be using % to calculate who is currently guessing
+        guessing_player = current_player + 1
+        
+        #variable of the guessed_letters, initialized to empty
+        guessed_letters = "_" * 26
+        
+        #set the number of guesses_left for this round to the number of guesses players had entered for the game settings in the beginning
+        guesses_left = guesses
+
+        #START A NEW ROUND
+        #while the word is not solved yet and there are still guesses left continue to get guesses from players
+        while not solved and guesses_left:
+            
+            #if the guessing player is not the current_player have them guess a character - validation
+            if not (guessing_player % num_players == current_player % num_players):
+                os.system('clear')
+                print(f"\nGuessed  Letters: {guessed_letters}")
+                print(f"Revealed Letters: {revealed_letters}")                    
+                print(f"Guesses left: {guesses_left}")
+
+                #input a letter from the guessing_player, validate it is an alpha character that has been lowered() and stored in guess_letter
+                valid = False
+                while not valid:
+                    try:
+                        guess_letter = input(f"{players[guessing_player % num_players].get_name()} please guess a letter:")
+                        guess_letter = guess_letter.lower()            
+                        if not guess_letter.isalpha() or not (len(guess_letter) == 1) or guess_letter in guessed_letters:
+                            raise ValueError
+                    except ValueError:
+                            os.system('clear')
+                            print("Please enter a valid character (a-z) that hasn't been guessed yet.")
+                            print(f"Guessed Letters: {guessed_letters}")
+                    else:
+                        valid = True
+                        guesses_left -= 1
+                
+                #insert guess_letter into the guessed_letters variable
+                new_guessed_letters = list(guessed_letters)
+                new_guessed_letters[ord(guess_letter)-97] = guess_letter
+                guessed_letters = ''.join(new_guessed_letters)
+                            
+                #if the guess_letter is in the word replace the corresponding '_' with all instances of guess_letter in revealed_letters
+                if guess_letter in word_to_guess:
+                    new_revealed_letters = list(revealed_letters)
+                    for i in range(len(word_to_guess)):
+                        if word_to_guess[i] == guess_letter:
+                            new_revealed_letters[i] = guess_letter
+                    revealed_letters = ''.join(new_revealed_letters)
+                        
+                #if the revealed_letters is the word_to_guess current player gets a point and word is considered solved (True)
+                if revealed_letters == word_to_guess:
+                    os.system('clear')
+                    print("YOU GUESSED THE WORD!!!!!!")
+                    print(f"Word: {word_to_guess}\n")
+                    players[guessing_player % num_players].add_point()
+                    solved = True
+
+            
+            #increment guessing_player to the next player to guess next
+            guessing_player += 1
+
+        #if the player didn't solve the word and is out of guesses inform them their dude is hung and dead
+        if not solved and guesses_left == 0:
+            os.system('clear')
+            print("DUDE YOUR DUDE HAS BEEN HUNG AND IS DEAD!!!!! (#_#)\n")
+
+        #show players scores
+        i = 1
+        for i in range(1, num_players + 1):
+            print(f"Player {players[i % num_players].get_player_id()} {players[i % num_players].get_name()} Score: {players[i % num_players].get_score()}")
+
+        #see if players want to play again with a prompt
+        valid = False
+        while not valid:
+            try:
+                play_again_response = input("\nPlay again (y/n): ")
+                play_again_response = play_again_response.lower()
+                if not play_again_response.isalpha() or not ((len(play_again_response)) == 1) or not (play_again_response == 'n' or play_again_response == 'y'):
+                    raise ValueError
+            except ValueError:
+                print("Please enter a valid entry (y/n)")
+            else:
+                valid = True
+                if play_again_response == 'n':
+                    play_again = False
 
 main()
