@@ -23,14 +23,15 @@ class Player:
     def get_score(self):
         return self.score
 
+
 def valid_input(input_prompt, validate_func, value_error_msg):
-    valid = False  
+    valid = False
     while not valid:
         try:
             user_input = input(input_prompt)
             user_input, valid_input = validate_func(user_input)
             if valid_input == False:
-                raise ValueError             
+                raise ValueError
         except ValueError:
             os.system("clear")
             print(value_error_msg)
@@ -38,11 +39,13 @@ def valid_input(input_prompt, validate_func, value_error_msg):
             valid = True
     return user_input
 
+
 def is_num(user_input):
     i = int(user_input)
-    if i: 
+    if i:
         return i, True
     raise ValueError
+
 
 def is_positive(user_input):
     i = int(user_input)
@@ -50,39 +53,42 @@ def is_positive(user_input):
         return i, True
     raise ValueError
 
+
 def is_gt(user_input, value):
     i = int(user_input)
     if i > value:
         return i, True
     raise ValueError
 
+
 def is_word(user_input):
     word_to_guess = user_input.lower()
     if not word_to_guess.isalpha():
-        raise ValueError  
+        raise ValueError
     return word_to_guess, True
 
+
 def is_char(user_input):
-    guess_letter = user_input    
+    guess_letter = user_input
     guess_letter = guess_letter.lower()
-    if (
-        not guess_letter.isalpha()
-        or not (len(guess_letter) == 1)
-    ):
+    if not guess_letter.isalpha() or not (len(guess_letter) == 1):
         raise ValueError
     return guess_letter, True
 
-def valid_option(user_input, option_list = []):
+
+def valid_option(user_input, option_list=[]):
     i = user_input[0]
     if i in option_list:
         return i, True
     return i, False
 
-def not_valid_option(user_input, option_list = []):
+
+def not_valid_option(user_input, option_list=[]):
     i = user_input[0]
     if i not in option_list:
         return i, True
     return i, False
+
 
 def main():
     # seeding the rng to choose player at random later
@@ -95,12 +101,18 @@ def main():
     print("\n \n \n")
 
     # input the number of guesses - valid input (integer > 0) stored in var guesses
-    num_guesses = valid_input("Enter number of guesses allowed: ", lambda x: is_num(x) and is_positive(x), 
-                              "Invalid input. Please enter a valid integer at least great than 0")
+    num_guesses = valid_input(
+        "Enter number of guesses allowed: ",
+        lambda x: is_num(x) and is_positive(x),
+        "Invalid input. Please enter a valid integer at least great than 0",
+    )
 
     # input the number of players - valid input (integer > 1) stored in num_players
-    num_players = valid_input("How many players: ", lambda x: is_num(x) and is_gt(x, 1), 
-                              "Invalid input. Please enter a valid integer at least greater than 1")
+    num_players = valid_input(
+        "How many players: ",
+        lambda x: is_num(x) and is_gt(x, 1),
+        "Invalid input. Please enter a valid integer at least greater than 1",
+    )
 
     # create a list of players - allocate num_players space in the list filled with None
     players = [None] * num_players
@@ -138,8 +150,11 @@ def main():
         )
 
         # input the word_to_guess - valid input string with size greater than 1 with out any non-alpha chars that has been lowered()
-        word_to_guess = valid_input("Please enter the word to guess: ", lambda x: is_word(x),
-                                    "Please enter a word at least 1 letter long with out any non-alpha characters")
+        word_to_guess = valid_input(
+            "Please enter the word to guess: ",
+            lambda x: is_word(x),
+            "Please enter a word at least 1 letter long with out any non-alpha characters",
+        )
 
         # clear the screen after word_to_guess is put in so other players wont see
         os.system("clear")
@@ -173,9 +188,12 @@ def main():
                 print(f"Guesses left: {guesses_left}")
 
                 # input a letter from the guessing_player, validate it is an alpha character that has been lowered() and stored in guess_letter
-                guess_letter = valid_input(f"{players[guessing_player % num_players].get_name()} please guess a letter:", lambda x: not_valid_option(is_char(x), guessed_letters),
-                               f"Please enter a valid character (a-z) that hasn't been guessed yet.\nGuessed  Letters: {guessed_letters}\nRevealed Letters: {revealed_letters}\nGuesses left: {guesses_left}")
-                
+                guess_letter = valid_input(
+                    f"{players[guessing_player % num_players].get_name()} please guess a letter:",
+                    lambda x: not_valid_option(is_char(x), guessed_letters),
+                    f"Please enter a valid character (a-z) that hasn't been guessed yet.\nGuessed  Letters: {guessed_letters}\nRevealed Letters: {revealed_letters}\nGuesses left: {guesses_left}",
+                )
+
                 # insert guess_letter into the guessed_letters variable
                 new_guessed_letters = list(guessed_letters)
                 new_guessed_letters[ord(guess_letter) - 97] = guess_letter
@@ -217,8 +235,12 @@ def main():
             )
 
         # see if players want to play again with a prompt
-        play_again_response = valid_input("\nPlay again (y/n): ", lambda x: valid_option(is_char(x),["y", "n"]), "Please enter a valid entry (y/n)")
-        
+        play_again_response = valid_input(
+            "\nPlay again (y/n): ",
+            lambda x: valid_option(is_char(x), ["y", "n"]),
+            "Please enter a valid entry (y/n)",
+        )
+
         if play_again_response == "n":
             play_again = False
 
