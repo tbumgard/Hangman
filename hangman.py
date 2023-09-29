@@ -158,10 +158,11 @@ def main():
                         print(
                             "Please enter a valid character (a-z) that hasn't been guessed yet."
                         )
-                        print(f"Guessed Letters: {guessed_letters}")
+                        print(f"\nGuessed  Letters: {guessed_letters}")
+                        print(f"Revealed Letters: {revealed_letters}")
+                        print(f"Guesses left: {guesses_left}")
                     else:
                         valid = True
-                        guesses_left -= 1
 
                 # insert guess_letter into the guessed_letters variable
                 new_guessed_letters = list(guessed_letters)
@@ -175,6 +176,8 @@ def main():
                         if word_to_guess[i] == guess_letter:
                             new_revealed_letters[i] = guess_letter
                     revealed_letters = "".join(new_revealed_letters)
+                else:
+                    guesses_left -= 1
 
                 # if the revealed_letters is the word_to_guess current player gets a point and word is considered solved (True)
                 if revealed_letters == word_to_guess:
@@ -187,10 +190,12 @@ def main():
             # increment guessing_player to the next player to guess next
             guessing_player += 1
 
-        # if the player didn't solve the word and is out of guesses inform them their dude is hung and dead
+        # if the players didn't solve the word and is out of guesses inform them their dude is hung and dead give a point to current player
         if not solved and guesses_left == 0:
             os.system("clear")
-            print("DUDE YOUR DUDE HAS BEEN HUNG AND IS DEAD!!!!! (#_#)\n")
+            print("DUDE YOUR DUDE HAS BEEN HUNG AND IS DEAD!!!!! (#_#)")
+            print(f"Word: {word_to_guess}\n")
+            players[current_player % num_players].add_point()
 
         # show players scores
         i = 1
