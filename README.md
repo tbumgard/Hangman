@@ -10,7 +10,7 @@ The other files/folders in the directory/repository are not very relevant to the
 
 /hangman/ - 
 /tests/ - 
-hangman.py - Main project source code
+hangman.py - Main project source code (relevant)
 Makefile - A makefile that has poetry as a dependency and contains 3 commands to select from:
     run - Runs the program 
     test - Tests the program using pytest
