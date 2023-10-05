@@ -23,7 +23,11 @@ class Player:
     def get_score(self):
         return self.score
 
-
+# Function to validate input from the user.  
+# valid_input(input_prompt(str), func validate_func, value_error_msg(str))
+# input_prompt - text to prompt the user what input we want
+# validate_func - callback function that is used to validate the input data as correct data
+# value_error_msg - text to post to the screen if the data input is not correct
 def valid_input(input_prompt, validate_func, value_error_msg):
     valid = False
     while not valid:
@@ -39,7 +43,7 @@ def valid_input(input_prompt, validate_func, value_error_msg):
             valid = True
     return user_input
 
-
+# Start of different callback functions to be passed to valid_input function 
 def is_num(user_input):
     i = int(user_input)
     if i:
@@ -89,6 +93,7 @@ def not_valid_option(user_input, option_list=[]):
         return i, True
     return i, False
 
+# End of callback functions for valid_input
 
 def main():
     # seeding the rng to choose player at random later
